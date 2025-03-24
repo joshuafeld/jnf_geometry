@@ -523,6 +523,47 @@ namespace jnf {
                 const circle<T2>& c2) {
             return {}; // TODO
         }
+
+        template<typename T>
+        inline constexpr circle<T> envelope_c(const vec2<T>& p) {
+            return circle<T>(p, 0);
+        }
+
+        template<typename T>
+        inline constexpr circle<T> envelope_c(const line<T>& l) {
+            return {}; // TODO
+        }
+
+        template<typename T>
+        inline constexpr circle<T> envelope_c(const rect<T>& r) {
+            return {}; // TODO
+        }
+
+        template<typename T>
+        inline constexpr circle<T> envelope_c(const circle<T>& c) {
+            return c;
+        }
+
+        template<typename T>
+        inline constexpr rect<T> envelope_r(const vec2<T>& p) {
+            return rect<T>(p, {0, 0});
+        }
+
+        template<typename T>
+        inline constexpr rect<T> envelope_r(const line<T>& l) {
+            return {}; // TODO
+        }
+
+        template<typename T>
+        inline constexpr rect<T> envelope_r(const rect<T>& r) {
+            return r;
+        }
+
+        template<typename T>
+        inline constexpr rect<T> envelope_r(const circle<T>& c) {
+            return rect<T>(c.pos - vec2<T>(c.radius, c.radius),
+                    vec2<T>(c.radius * 2, c.radius * 2));
+        }
     }
 }
 
