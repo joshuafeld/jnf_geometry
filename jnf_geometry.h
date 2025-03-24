@@ -70,7 +70,7 @@ namespace jnf {
             return x * v.x + y * v.y;
         }
 
-        inline constexpr vec2 cross(const vec2& v) const {
+        inline constexpr auto cross(const vec2& v) const {
             return x * v.y - y * v.x;
         }
 
