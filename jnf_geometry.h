@@ -570,7 +570,7 @@ namespace jnf {
 
         template<typename T>
         inline constexpr circle<T> envelope_c(const rect<T>& r) {
-            return {}; // TODO
+            return envelope_c(line<T>(r.pos, r.pos + r.size));
         }
 
         template<typename T>
