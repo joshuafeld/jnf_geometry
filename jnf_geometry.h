@@ -113,24 +113,24 @@ namespace jnf {
                 const vec2<T>& end = {T(0), T(0)}) : start(start), end(end) {
             }
 
-            inline constexpr T length() {
-                return (end - start).mag();
-            }
-
-            inline constexpr T length2() {
-                return (end - start).mag2();
-            }
-
             inline constexpr vec2<T> vec() const {
                 return end - start;
             }
 
+            inline constexpr T length() {
+                return vec().mag();
+            }
+
+            inline constexpr T length2() {
+                return vec().mag2();
+            }
+
             inline constexpr vec2<T> point(const T& dist) const {
-                return start + (end - start) * dist;
+                return start + dist * vec();
             }
 
             inline constexpr int32_t side(const vec2<T>& p) const {
-                return sgn((end - start).cross(p - start));
+                return sgn(vec().cross(p - start));
             }
         };
 
@@ -334,7 +334,7 @@ namespace jnf {
 
         template<typename T1, typename T2>
         inline constexpr bool contains(const line<T1>& l1, const line<T2>& l2) {
-            return false; // TODO
+            return overlaps(l1, l2.start) && overlaps(l1, l2.end);
         }
 
         template<typename T1, typename T2>
@@ -396,7 +396,7 @@ namespace jnf {
             if (rn < 0.f || rn > 1.f || sn < 0.f || sn > 1.f) {
                 return {};
             }
-            return {l1.start + rn * (l1.end - l1.start)};
+            return {l1.start + rn * l1.vec()};
         }
 
         template<typename T1, typename T2>
