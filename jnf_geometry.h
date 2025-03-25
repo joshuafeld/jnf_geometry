@@ -97,6 +97,10 @@ namespace jnf {
         inline constexpr bool operator!=(const vec2& v) const {
             return x != v.x || y != v.y;
         }
+
+        inline constexpr vec2 operator-(const vec2& v) const {
+            return vec2(x - v.x, y - v.y);
+        }
     };
 
     namespace geometry {
@@ -119,6 +123,10 @@ namespace jnf {
 
             inline constexpr vec2<T> vec() const {
                 return end - start;
+            }
+
+            inline constexpr vec2<T> point(const T& dist) const {
+                return start + (end - start) * dist;
             }
 
             inline constexpr int32_t side(const vec2<T>& p) const {
@@ -153,6 +161,21 @@ namespace jnf {
 
             inline line<T> right() const {
                 return {{pos.x + size.x, pos.y}, pos + size};
+            }
+
+            inline line<T> side(const int32_t i) const {
+                switch (i % 4) {
+                    case 0:
+                        return top();
+                    case 1:
+                        return right();
+                    case 2:
+                        return bottom();
+                    case 3:
+                        return left();
+                    default:
+                        return {};
+                }
             }
 
             inline constexpr T area() const {
@@ -324,12 +347,16 @@ namespace jnf {
 
         template<typename T1, typename T2>
         inline constexpr bool overlaps(const line<T1>& l1, const line<T2>& l2) {
-            return false; // TODO
+            const auto d = l2.vec().cross(l1.vec());
+            const float u1 = l2.vec().cross(l1.start - l2.start) / d;
+            const float u2 = l1.vec().cross(l1.start - l2.start) / d;
+            return u1 >= 0 && u1 <= 1 && u2 >= 0 && u2 <= 1;
         }
 
         template<typename T1, typename T2>
         inline constexpr bool overlaps(const rect<T1>& r, const line<T2>& l) {
-            return contains(r, l.start) || contains(r, l.end);
+            return overlaps(r.top(), l) || overlaps(r.bottom(), l)
+                    || overlaps(r.left(), l) || overlaps(r.right(), l);
         }
 
         template<typename T1, typename T2>
@@ -368,7 +395,14 @@ namespace jnf {
         template<typename T1, typename T2>
         inline std::vector<vec2<T2>> intersects(const rect<T1>& r,
                 const line<T2>& l) {
-            return {}; // TODO
+            std::vector<vec2<T2>> ret;
+            for (auto i = 0; i < 4; ++i) {
+                auto intersects = intersects(r.side(i), l);
+                if (!intersects.empty()) {
+                    ret.push_back(intersects[0]);
+                }
+            }
+            return ret;
         }
 
         template<typename T1, typename T2>
@@ -441,7 +475,7 @@ namespace jnf {
         template<typename T1, typename T2>
         inline std::vector<vec2<T2>> intersects(const line<T1>& l,
                 const rect<T2>& r) {
-            return {}; // TODO
+            return intersects(r, l);
         }
 
         template<typename T1, typename T2>
@@ -531,7 +565,7 @@ namespace jnf {
 
         template<typename T>
         inline constexpr circle<T> envelope_c(const line<T>& l) {
-            return {}; // TODO
+            return {l.point(0.5), l.length() / 2};
         }
 
         template<typename T>
@@ -551,7 +585,10 @@ namespace jnf {
 
         template<typename T>
         inline constexpr rect<T> envelope_r(const line<T>& l) {
-            return {}; // TODO
+            return {{std::min(l.start.x, l.end.x),
+                    std::min(l.start.y, l.end.y)},
+                    {std::abs(l.start.x - l.end.x),
+                    std::abs(l.start.y - l.end.y)}};
         }
 
         template<typename T>
