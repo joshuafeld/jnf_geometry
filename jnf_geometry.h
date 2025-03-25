@@ -415,7 +415,30 @@ namespace jnf {
         template<typename T1, typename T2>
         inline std::vector<vec2<T2>> intersects(const circle<T1>& c,
                 const line<T2>& l) {
-            return {}; // TODO
+            const auto d = l.vec();
+            const auto u = d.dot(c.pos - l.start) / d.mag2();
+            const auto closest = l.start + u * d;
+
+            const auto dist = (c.pos - closest).mag2();
+            const auto r2 = c.radius * c.radius;
+            if (std::abs(dist - r2) < eps) {
+                return {closest};
+            }
+            if (dist > r2) {
+                return {};
+            }
+
+            const auto length = std::sqrt(c.radius * c.radius - dist);
+            const auto p1 = closest + l.vec().norm() * length;
+            const auto p2 = closest - l.vec().norm() * length;
+            std::vector<vec2<T2>> ret;
+            if ((p1 - closest(l, p1)).mag2() < eps * eps) {
+                ret.push_back(p1);
+            }
+            if ((p2 - closest(l, p2)).mag2() < eps * eps) {
+                ret.push_back(p2);
+            }
+            return ret;
         }
 
         template<typename T1, typename T2>
@@ -509,7 +532,10 @@ namespace jnf {
 
         template<typename T1, typename T2>
         inline constexpr bool contains(const rect<T1>& r, const circle<T2>& c) {
-            return false; // TODO
+            return r.pos.x + c.radius <= c.pos.x
+                    && r.pos.y + c.radius <= c.pos.y
+                    && c.pos.x <= r.pos.x + r.size.x - c.radius
+                    && c.pos.y <= r.pos.y + r.size.y - c.radius;
         }
 
         template<typename T1, typename T2>
