@@ -375,7 +375,7 @@ namespace jnf {
         template<typename T1, typename T2>
         inline std::vector<vec2<T2>> intersects(const vec2<T1>& p,
                 const line<T2>& l) {
-            return {}; // TODO
+            return intersects(l, p);
         }
 
         template<typename T1, typename T2>
@@ -544,19 +544,19 @@ namespace jnf {
         template<typename T1, typename T2>
         inline std::vector<vec2<T2>> intersects(const vec2<T1>& p,
                 const circle<T2>& c) {
-            return {}; // TODO
+            return intersects(c, p);
         }
 
         template<typename T1, typename T2>
         inline std::vector<vec2<T2>> intersects(const line<T1>& l,
                 const circle<T2>& c) {
-            return {}; // TODO
+            return intersects(c, l);
         }
 
         template<typename T1, typename T2>
         inline std::vector<vec2<T2>> intersects(const rect<T1>& r,
                 const circle<T2>& c) {
-            return {}; // TODO
+            return intersects(c, r);
         }
 
         template<typename T1, typename T2>
