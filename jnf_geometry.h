@@ -228,10 +228,17 @@ namespace jnf {
 
         template<typename T1, typename T2>
         inline vec2<T1> closest(const rect<T1>& r, const vec2<T2>& p) {
-            return vec2<T1>(
-                    std::clamp(p.x, r.pos.x, r.pos.x + r.size.x),
-                    std::clamp(p.y, r.pos.y, r.pos.y + r.size.y)
-            );
+            auto c_min = closest(r.top(), p);
+            auto d_min = (c_min - p).mag2();
+            for (auto i = 1; i < 4; ++i) {
+                auto c = closest(r.side(i), p);
+                auto d = (c - p).mag2();
+                if (d < d_min) {
+                    c_min = c;
+                    d_min = d;
+                }
+            }
+            return c_min;
         }
 
         template<typename T1, typename T2>
